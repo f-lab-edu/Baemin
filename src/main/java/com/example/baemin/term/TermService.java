@@ -14,7 +14,7 @@ public class TermService {
     private final TermRepository termRepository;
 
     public TermResponse getTermsList() {
-        List<Term> terms = termRepository.findAll();
+        List<Term> terms = termRepository.findAllLatestVersions();
         return TermResponse.builder()
                 .terms(terms.stream()
                         .map(this::convertToDto)
@@ -27,39 +27,8 @@ public class TermService {
                 .termId(term.getTermId())
                 .name(term.getName())
                 .isRequired(term.isRequired())
+                .version(term.getVersion())
                 .link(term.getLink())
-                .receiveOptions(convertToReceiveOptionsDto(term.getReceiveOptions()))
-                .build();
-    }
-
-    private TermResponse.ReceiveOptionsDto convertToReceiveOptionsDto(List<ReceiveOption> receiveOptions) {
-        TermResponse.ReceiveOptionDto sms = null;
-        TermResponse.ReceiveOptionDto email = null;
-        TermResponse.ReceiveOptionDto phone = null;
-
-        for (ReceiveOption option : receiveOptions) {
-            TermResponse.ReceiveOptionDto optionDto = TermResponse.ReceiveOptionDto.builder()
-                    .isRequired(option.isRequired())
-                    .isAgreed(false) // 기본값으로 false 설정
-                    .build();
-
-            switch (option.getOptionType().toLowerCase()) {
-                case "sms":
-                    sms = optionDto;
-                    break;
-                case "email":
-                    email = optionDto;
-                    break;
-                case "phone":
-                    phone = optionDto;
-                    break;
-            }
-        }
-
-        return TermResponse.ReceiveOptionsDto.builder()
-                .sms(sms)
-                .email(email)
-                .phone(phone)
                 .build();
     }
 }

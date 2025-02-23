@@ -1,42 +1,40 @@
 package com.example.baemin.term;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "terms")  // 테이블명 지정
+@Table(name = "terms")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Term {
     @Id
     private String termId;
-
     private String name;
-
-    @Column(name = "is_required")
     private boolean isRequired;
-
+    private String version;
     private String link;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @UpdateTimestamp  // 자동 업데이트를 위해 추가
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "termId")
-    private List<ReceiveOption> receiveOptions;
-
     @Builder
-    public Term(String termId, String name, boolean isRequired, String link) {
+    public Term(String termId, String name, boolean isRequired, String version, String link) {
         this.termId = termId;
         this.name = name;
         this.isRequired = isRequired;
+        this.version = version;
         this.link = link;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
