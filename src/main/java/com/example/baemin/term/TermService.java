@@ -12,23 +12,24 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class TermService {
     private final TermRepository termRepository;
+    private final TermVersionRepository termVersionRepository;
 
     public TermResponse getTermsList() {
-        List<Term> terms = termRepository.findAllLatestVersions();
+        List<TermVersion> latestVersions = termVersionRepository.findAllLatestVersions();
         return TermResponse.builder()
-                .terms(terms.stream()
+                .terms(latestVersions.stream()
                         .map(this::convertToDto)
                         .collect(Collectors.toList()))
                 .build();
     }
 
-    private TermResponse.TermDto convertToDto(Term term) {
+    private TermResponse.TermDto convertToDto(TermVersion termVersion) {
         return TermResponse.TermDto.builder()
-                .termId(term.getTermId())
-                .name(term.getName())
-                .isRequired(term.isRequired())
-                .version(term.getVersion())
-                .link(term.getLink())
+                .termId(termVersion.getTermId())
+                .name(termVersion.getTerm().getName())
+                .isRequired(termVersion.isRequired())
+                .version(termVersion.getVersion())
+                .link(termVersion.getLink())
                 .build();
     }
 }
