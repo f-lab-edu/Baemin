@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TermRepository extends JpaRepository<Term, Long> {
+public interface TermRepository extends JpaRepository<Term, Term.TermId> {
     List<Term> findAll();
 
     @Query("SELECT t FROM Term t WHERE t.termId = :termId AND t.version = " +
