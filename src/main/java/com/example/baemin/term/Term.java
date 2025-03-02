@@ -1,34 +1,35 @@
 package com.example.baemin.term;
 
+import com.example.baemin.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "terms")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Term {
+@IdClass(Term.TermId.class)
+public class Term extends BaseTimeEntity {
     @Id
     private String termId;
+
+    @Id
+    private String version;
+
     private String name;
     private boolean isRequired;
-    private String version;
     private String link;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp  // 자동 업데이트를 위해 추가
-    private LocalDateTime updatedAt;
     @Builder
     public Term(String termId, String name, boolean isRequired, String version, String link) {
         this.termId = termId;
@@ -36,7 +37,32 @@ public class Term {
         this.isRequired = isRequired;
         this.version = version;
         this.link = link;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 복합키 클래스
+    @Getter
+    @NoArgsConstructor
+    public static class TermId implements Serializable {
+        private String termId;
+        private String version;
+
+        public TermId(String termId, String version) {
+            this.termId = termId;
+            this.version = version;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TermId termId1 = (TermId) o;
+            return Objects.equals(termId, termId1.termId) &&
+                    Objects.equals(version, termId1.version);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(termId, version);
+        }
     }
 }
